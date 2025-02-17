@@ -1,0 +1,114 @@
+# ---------------------------------------------------------
+# Spectral analysis of tree growth ring 
+# Developed by: Leon Nahuel Torres
+# Year: 2025
+# Developed for: Jilin University
+# Thesis Title: Fossil wood of Abies from the Pleistocene Jilin Province, Northeast China
+# For more details, questions, or comments, contact: utarraptor@hotmail.com
+# ---------------------------------------------------------
+
+import numpy as np
+import matplotlib.pyplot as plt
+from scipy.signal import periodogram
+from scipy.stats import Rayleigh
+
+# ---- INPUT PARAMETERS (MODIFY ACCORDING TO THE SAMPLE) ----
+
+# Tree growth ring data (adjust with the tree data)
+# Here you can input the tree growth ring values for a new dataset. 
+# Enter the values as comma-separated numbers replacing the "XXXX, XXXX" between the following “[ ]”
+widths = np.array([ XXXX, XXXX ])
+
+# ---- SOLAR ACTIVITY ANALISYS ----
+
+# Define the period range to consider in the analysis (in years)
+min_period = 5  # Minimum period to consider
+max_period = 20  # Maximum period to consider
+
+# Define the range of interest for the dominant cycle
+dominant_cycle_range = (9, 11)  # 9 to 11 years range
+
+# ---- ANALYSIS CODE ----
+
+# Print context information 
+print("Developed by: Leon Nahuel Torres") 
+print("Year: 2025") 
+print("Developed for: Jilin University") 
+print("Thesis Title: Fossil wood of Abies from the Pleistocene Jilin Province, Northeast China") 
+print("For more details, questions, or comments, contact: utarraptor@hotmail.com") 
+print("-" * 60)
+
+# Perform spectral analysis on the tree ring data
+frequencies, power = periodogram(widths, scaling='spectrum')
+
+# Filter frequencies that are greater than zero 
+valid_idx = frequencies > 0 
+frequencies = frequencies[valid_idx] 
+power = power[valid_idx] # Filter 'power' according to the frequencies 
+
+# Convert frequencies to periods in years 
+periods = 1 / frequencies
+
+# Full spectrum plot (no restrictions)
+plt.figure(figsize=(8, 5))
+plt.plot(periods, power, marker='o', linestyle='-')
+plt.xlabel("Period (years)")
+plt.ylabel("Power Spectral Density")
+plt.title("Full Spectral Analysis of Tree Growth Ring")
+plt.grid(True)
+plt.show()
+
+# List significant cycles with their p-values
+relevant_cycles = []
+for period, pwr in zip(periods, power):
+    mean_power = np.mean(power)  # Average power of the full spectrum
+    p_value = 1 - rayleigh.cdf(pwr, scale=mean_power)
+    
+    if p_value < 0.05:  # Significant cycle if p-value is less than 0.05
+        relevant_cycles.append((period, pwr, p_value))
+
+# Display list of significant cycles
+if relevant_cycles:
+    print("Statistically significant cycles (p-value < 0.05):")
+    for cycle in relevant_cycles:
+        print(f"Period: {cycle[0]:.2f} years, Power: {cycle[1]:.2f}, p-value: {cycle[2]:.4f}")
+else:
+print("No statistically significant cycles found.")
+
+# Restrict periods to the defined range (5 to 20 years)
+valid_periods_idx = (periods >= min_period) & (periods <= max_period)
+periods = periods[valid_periods_idx]
+power = power[valid_periods_idx]
+
+# Plot the restricted power spectrum
+plt.figure(figsize=(8, 5))
+plt.plot(periods, power, marker='o', linestyle='-')
+plt.xlabel("Period (years)")
+plt.ylabel("Power Spectral Density")
+plt.title(f"Restricted Spectral Analysis ({min_period}-{max_period} years)")
+plt.grid(True)
+plt.show()
+
+# Filter periods within the range for the dominant cycle
+dominant_periods_range = (periods >= dominant_cycle_range[0]) & (periods <= dominant_cycle_range[1])
+dominant_periods = periods[dominant_periods_range]
+dominant_powers = power[dominant_periods_range]
+
+# Find the period with the highest power in this range
+if len(dominant_periods) > 0:
+    max_power_idx = np.argmax(dominant_powers)
+    dominant_period = dominant_periods[max_power_idx]
+    dominant_power = dominant_powers[max_power_idx]
+    print(f"\nThe dominant cycle in the range {dominant_cycle_range[0]}-{dominant_cycle_range[1]} years is: {dominant_period:.2f} years")
+    
+    # Estimate significance using the Rayleigh distribution
+    mean_power = np.mean(power)  # Average power of the restricted spectrum
+    p_value = 1 - rayleigh.cdf(dominant_power, scale=mean_power)
+    
+    # Interpretation of the p-value
+    if p_value < 0.05:
+        print(f"The dominant cycle is statistically significant (p-value = {p_value:.4f}).")
+    else:
+        print(f"The dominant cycle is NOT statistically significant (p-value = {p_value:.4f}).")
+else:
+    print("No dominant cycle found in the defined range.")
