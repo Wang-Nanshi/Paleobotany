@@ -10,7 +10,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 from scipy.signal import periodogram
-from scipy.stats import Rayleigh
+from scipy.stats import rayleigh
 
 # ---- INPUT PARAMETERS (MODIFY ACCORDING TO THE SAMPLE) ----
 
@@ -73,7 +73,7 @@ if relevant_cycles:
     for cycle in relevant_cycles:
         print(f"Period: {cycle[0]:.2f} years, Power: {cycle[1]:.2f}, p-value: {cycle[2]:.4f}")
 else:
-print("No statistically significant cycles found.")
+    print("No statistically significant cycles found.")
 
 # Restrict periods to the defined range (5 to 20 years)
 valid_periods_idx = (periods >= min_period) & (periods <= max_period)
