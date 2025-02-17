@@ -26,7 +26,7 @@ min_period = 5  # Minimum period to consider
 max_period = 20  # Maximum period to consider
 
 # Define the range of interest for the dominant cycle
-dominant_cycle_range = (9, 11)  # 9 to 11 years range
+dominant_cycle_range = (10, 12)  # 10 to 12 years range
 
 # ---- ANALYSIS CODE ----
 
